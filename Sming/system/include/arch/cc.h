@@ -35,9 +35,11 @@
 #define __ARCH_CC_H__
 
 //#include <string.h>
-#include "c_types.h"
-#include "ets_sys.h"
-#include "osapi.h"
+// #include "c_types.h"
+// #include "ets_sys.h"
+// #include "osapi.h"
+#include "esp_common.h"
+
 #define EFAULT 14
 
 //#define LWIP_PROVIDE_ERRNO

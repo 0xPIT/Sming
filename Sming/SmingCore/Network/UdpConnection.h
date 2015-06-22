@@ -12,6 +12,8 @@
 #include "../Delegate.h"
 #include "IPAddress.h"
 
+struct pbuf;
+struct udp_pcb;
 class UdpConnection;
 
 //typedef void (*UdpConnectionDataCallback)(UdpConnection& connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort);

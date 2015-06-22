@@ -2,7 +2,7 @@
 /* PUBLIC DOMAIN - Jon Mayo - Aug 20, 2007 */
 #include "escape.h"
 #include <stdlib.h>
-#include <c_types.h>
+//#include <c_types.h>
 #include <ctype.h>
 #include <math.h>
 

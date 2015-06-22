@@ -3,7 +3,7 @@
 /* $Id: base64.c 156 2007-07-12 23:29:10Z orange $ */
 #include "base64.h"
 
-#include <c_types.h>
+//#include <c_types.h>
 #include <ctype.h>
 
 

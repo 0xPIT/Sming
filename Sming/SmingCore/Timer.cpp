@@ -16,51 +16,61 @@ Timer::~Timer()
 	stop();
 }
 
-Timer& Timer::initializeMs(uint32_t milliseconds, InterruptCallback callback/* = NULL*/)
+Timer& Timer::initializeMs(/*uint32_t*/ unsigned long milliseconds, InterruptCallback callback)
 {
 	setCallback(callback);
 	setIntervalMs(milliseconds);
-	return *this;
+	return *this;	
 }
 
-Timer& Timer::initializeUs(uint32_t microseconds, InterruptCallback callback/* = NULL*/)
+Timer& Timer::initializeUs(/*uint32_t*/ unsigned long microseconds, InterruptCallback callback)
 {
 	setCallback(callback);
 	setIntervalUs(microseconds);
 	return *this;
 }
 
-Timer& Timer::initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction)
+Timer& Timer::initializeMs(/*uint32_t*/ unsigned long milliseconds, TimerDelegate delegateFunction)
 {
 	setCallback(delegateFunction);
 	setIntervalMs(milliseconds);
 	return *this;
 }
 
-Timer& Timer::initializeUs(uint32_t microseconds, TimerDelegate delegateFunction)
+Timer& Timer::initializeUs(/*uint32_t*/ unsigned long microseconds, TimerDelegate delegateFunction)
 {
 	setCallback(delegateFunction);
 	setIntervalUs(microseconds);
 	return *this;
 }
 
-void Timer::start(bool repeating/* = true*/)
+void Timer::start(bool repeating)
 {
 	stop();
+
 	if(interval == 0 || (!callback && !delegate_func)) return;
-	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
-	if (interval > 10000)
-		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), repeating, 1); // msec
-	else
-		ets_timer_arm_new(&timer, (uint32_t)interval, repeating, 0); 		  // usec
-	started = true;
+
+	timer = xTimerCreate(
+                     (const signed char *)"timer",       /* Just a text name, not used by the RTOS kernel. */
+                     (100),        /* The timer period in ticks. */
+                     pdTRUE,       /* The timers will auto-reload themselves when they expire. */
+                     (void *)this, /* Assign each timer a unique id */
+                     processing    /* Each timer calls the same callback when it expires. */
+  );
+
+	// ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
+
+	// if (interval > 10000)
+	// 	ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), repeating, 1); // msec
+	// else
+	// 	ets_timer_arm_new(&timer, (uint32_t)interval, repeating, 0); 		  // usec
+
 }
 
 void Timer::stop()
 {
-	if (!started) return;
-	ets_timer_disarm(&timer);
-	started = false;
+	if (!xTimerIsTimerActive(timer)) return;	
+	xTimerStop(timer, 0);
 }
 
 void Timer::restart()
@@ -71,7 +81,7 @@ void Timer::restart()
 
 bool Timer::isStarted()
 {
-	return started;
+	return xTimerIsTimerActive(timer);
 }
 
 uint32_t Timer::getIntervalUs()
@@ -84,24 +94,25 @@ uint32_t Timer::getIntervalMs()
 	return (uint32_t)interval / 1000;
 }
 
-void Timer::setIntervalUs(uint32_t microseconds/* = 1000000*/)
+void Timer::setIntervalUs(uint32_t microseconds)
 {
 	interval = microseconds;
-	if (started)
+	xTimerChangePeriod(timer, interval, 0);
+	if (isStarted())
 		restart();
 }
 
-void Timer::setIntervalMs(uint32_t milliseconds/* = 1000000*/)
+void Timer::setIntervalMs(uint32_t milliseconds)
 {
 	setIntervalUs(((uint64_t)milliseconds) * 1000);
 }
 
-void Timer::setCallback(InterruptCallback interrupt/* = NULL*/)
+void Timer::setCallback(InterruptCallback interrupt)
 {
-	ETS_INTR_LOCK();
+	vPortEnterCritical(); //portDISABLE_INTERRUPTS(); //ETS_INTR_LOCK();
 	callback = interrupt;
 	delegate_func = nullptr;
-	ETS_INTR_UNLOCK();
+	vPortExitCritical(); //portENABLE_INTERRUPTS(); //ETS_INTR_UNLOCK();
 
 	if (!interrupt)
 		stop();
@@ -109,28 +120,27 @@ void Timer::setCallback(InterruptCallback interrupt/* = NULL*/)
 
 void Timer::setCallback(TimerDelegate delegateFunction)
 {
-	ETS_INTR_LOCK();
+	vPortEnterCritical(); //portDISABLE_INTERRUPTS(); //ETS_INTR_LOCK();
 	callback = nullptr;
 	delegate_func = delegateFunction;
-	ETS_INTR_UNLOCK();
+	vPortExitCritical(); //portENABLE_INTERRUPTS(); //ETS_INTR_UNLOCK();
 
 	if (!delegateFunction)
 		stop();
 }
 
-void Timer::processing(void *arg)
+void Timer::processing(xTimerHandle tmr)
 {
-	Timer *ptimer = (Timer*)arg;
-	if (ptimer == NULL)
-	{
+	//Timer *ptimer = (Timer*)arg;
+	Timer *ptimer = (Timer *)pvTimerGetTimerID(tmr);
+
+	if (ptimer == NULL) {
 	   return;
 	}
-	else if (ptimer->callback)
-	{
+	else if (ptimer->callback) {
 		ptimer->callback();
 	}
-	else if (ptimer->delegate_func)
-	{
+	else if (ptimer->delegate_func) {
 		ptimer->delegate_func();
 	}
 }

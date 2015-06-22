@@ -11,6 +11,7 @@
 #include "../SmingCore/Interrupts.h"
 #include "../SmingCore/Delegate.h"
 #include "../Wiring/WiringFrameworkDependencies.h"
+#include <freertos/timers.h>
 
 typedef Delegate<void()> TimerDelegate;
 
@@ -25,11 +26,15 @@ public:
 	// We provide both versions: Delegate and classic c-style callback function for performance reason (for high-frequency timers)
 	// Usually only Delegate needed
 
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, InterruptCallback callback = NULL); // Init in Milliseconds.
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, InterruptCallback callback = NULL); // Init in Microseconds.
+	// Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, InterruptCallback callback = NULL); // Init in Milliseconds.
+	// Timer& IRAM_ATTR initializeUs(uint32_t microseconds, InterruptCallback callback = NULL); // Init in Microseconds.
+  Timer& IRAM_ATTR initializeMs(unsigned long milliseconds, InterruptCallback callback = NULL); // Init in Milliseconds.
+  Timer& IRAM_ATTR initializeUs(unsigned long microseconds, InterruptCallback callback = NULL); // Init in Microseconds.
 
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = NULL); // Init in Microseconds.
+	//Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
+	//Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = NULL); // Init in Microseconds.
+  Timer& IRAM_ATTR initializeMs(unsigned long milliseconds, TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
+  Timer& IRAM_ATTR initializeUs(unsigned long microseconds, TimerDelegate delegateFunction = NULL); // Init in Microseconds.
 
 	void IRAM_ATTR start(bool repeating = true);
 	void __forceinline IRAM_ATTR startOnce() { start(false); }
@@ -47,15 +52,14 @@ public:
     void IRAM_ATTR setCallback(TimerDelegate delegateFunction);
 
 protected:
-    static void IRAM_ATTR processing(void *arg);
-
+    static void IRAM_ATTR processing(xTimerHandle tmr);
 
 private:
-    os_timer_t timer;
+    xTimerHandle timer; // os_timer_t timer;
     uint64_t interval = 0;
     InterruptCallback callback = nullptr;
     TimerDelegate delegate_func = nullptr;
-    bool started = false;
+    //bool started = false;
 };
 
 #endif /* _SMING_CORE_Timer_H_ */

@@ -7,6 +7,7 @@
 
 #include "AccessPoint.h"
 #include "../../SmingCore/SmingCore.h"
+#include "udhcp/dhcpd.h"
 
 AccessPointClass WifiAccessPoint;
 
@@ -38,7 +39,7 @@ bool AccessPointClass::config(String ssid, String password, AUTH_MODE mode, bool
 
 	bool enabled = isEnabled();
 	enable(true);
-	wifi_softap_dhcps_stop();
+//	wifi_softap_dhcps_stop();
 	wifi_softap_get_config(&config);
 	config.channel = channel;
 	config.ssid_hidden = hidden;
@@ -56,7 +57,7 @@ bool AccessPointClass::config(String ssid, String password, AUTH_MODE mode, bool
 		if (!wifi_softap_set_config(&config))
 		{
 			interrupts();
-			wifi_softap_dhcps_start();
+//			wifi_softap_dhcps_start();
 			enable(enabled);
 			debugf("Can't set AP configuration!");
 			return false;
@@ -73,7 +74,7 @@ bool AccessPointClass::config(String ssid, String password, AUTH_MODE mode, bool
 		memcpy(runConfig, &config, sizeof(softap_config));
 	}
 
-	wifi_softap_dhcps_start();
+//	wifi_softap_dhcps_start();
 	enable(enabled);
 
 	return true;
@@ -94,14 +95,14 @@ bool AccessPointClass::setIP(IPAddress address)
 		return false;
 	}
 
-	wifi_softap_dhcps_stop();
+//	wifi_softap_dhcps_stop();
 	struct ip_info ipinfo;
 	wifi_get_ip_info(SOFTAP_IF, &ipinfo);
 	ipinfo.ip = address;
 	ipinfo.gw = address;
 	IP4_ADDR(&ipinfo.netmask, 255, 255, 255, 0);
 	wifi_set_ip_info(SOFTAP_IF, &ipinfo);
-	wifi_softap_dhcps_start();
+//	wifi_softap_dhcps_start();
 	return true;
 }
 
@@ -125,7 +126,7 @@ void AccessPointClass::onSystemReady()
 		noInterrupts();
 		bool enabled = isEnabled();
 		enable(true);
-		wifi_softap_dhcps_stop();
+//		wifi_softap_dhcps_stop();
 
 		if(!wifi_softap_set_config(runConfig))
 			debugf("Can't set AP config on system ready event!");
@@ -134,7 +135,7 @@ void AccessPointClass::onSystemReady()
 		delete runConfig;
 		runConfig = NULL;
 
-		wifi_softap_dhcps_start();
+//		wifi_softap_dhcps_start();
 		enable(enabled);
 		interrupts();
 	}

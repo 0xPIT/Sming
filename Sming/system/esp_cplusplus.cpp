@@ -2,6 +2,12 @@
 #include "../include/esp_cplusplus.h"
 #include <stdlib.h>
 
+
+extern "C" void abort() {
+     while(1) {
+     }
+ }
+
 ////////////////////////////////////////////////////////////////////////
 
 // Just do it! :)

@@ -38,15 +38,15 @@ extern "C" {
 
 #ifdef __AVR__
     #include <avr/pgmspace.h>
-#elif !defined(__ESP8266_EX__)
-    #define PROGMEM
-    #define PSTR
-    #define strstr_P strstr
-    #define sscanf_P sscanf
-    #define sprintf_P sprintf
-    #define strlen_P strlen
-    #define memcmp_P memcmp
-    #define memcpy_P memcpy
+// #elif !defined(__ESP8266_EX__)
+//     #define PROGMEM
+//     #define PSTR
+//     #define strstr_P strstr
+//     #define sscanf_P sscanf
+//     #define sprintf_P sprintf
+//     #define strlen_P strlen
+//     #define memcmp_P memcmp
+//     #define memcpy_P memcpy
 #endif
 
 #ifndef TRUE

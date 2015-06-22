@@ -41,7 +41,6 @@ public:
 	void flush();
 	size_t write(uint8_t oneChar);
 
-	//void printf(const char *fmt, ...);
 	void systemDebugOutput(bool enabled);
 	void setCallback(StreamDataReceivedDelegate reqCallback, bool useSerialRxBuffer = true);
 	void resetCallback();

@@ -1,28 +1,104 @@
 #ifndef UART_APP_H
 #define UART_APP_H
 
-#include "../espinc/uart_register.h"
+//#include "../espinc/uart_register.h"
 
 #define RX_BUFF_SIZE    0x100
 #define TX_BUFF_SIZE    100
+/*
+typedef enum {
+    UART_WordLength_5b = 0x0,
+    UART_WordLength_6b = 0x1,
+    UART_WordLength_7b = 0x2,
+    UART_WordLength_8b = 0x3
+} UartWordLength;
 
 typedef enum {
+    USART_StopBits_1   = 0x1,
+    USART_StopBits_1_5 = 0x2,
+    USART_StopBits_2   = 0x3,
+} UartStopBits;
+
+typedef enum {
+    USART_Parity_None = 0x2,
+    USART_Parity_Even = 0x0,
+    USART_Parity_Odd  = 0x1
+} UartParityMode;
+
+typedef enum {
+    PARITY_DIS = 0x0,
+    PARITY_EN  = 0x2
+} UartExistParity;
+
+typedef enum {
+    BIT_RATE_300     = 300,
+    BIT_RATE_600     = 600,
+    BIT_RATE_1200    = 1200,
+    BIT_RATE_2400    = 2400,
+    BIT_RATE_4800    = 4800,
+    BIT_RATE_9600    = 9600,
+    BIT_RATE_19200   = 19200,
+    BIT_RATE_38400   = 38400,
+    BIT_RATE_57600   = 57600,
+    BIT_RATE_74880   = 74880,
+    BIT_RATE_115200  = 115200,
+    BIT_RATE_230400  = 230400,
+    BIT_RATE_460800  = 460800,
+    BIT_RATE_921600  = 921600,
+    BIT_RATE_1843200 = 1843200,
+    BIT_RATE_3686400 = 3686400,
+} UartBaudRate; //you can add any rate you need in this range
+
+typedef enum {
+    USART_HardwareFlowControl_None    = 0x0,
+    USART_HardwareFlowControl_RTS     = 0x1,
+    USART_HardwareFlowControl_CTS     = 0x2,
+    USART_HardwareFlowControl_CTS_RTS = 0x3
+} UartHwFlowCtrl;
+*/
+
+typedef enum {
+    UART_None_Inverse = 0x0,
+    UART_Rxd_Inverse  = UART_RXD_INV,
+    UART_CTS_Inverse  = UART_CTS_INV,
+    UART_Txd_Inverse  = UART_TXD_INV,
+    UART_RTS_Inverse  = UART_RTS_INV,
+} UartLineLevelInverse;
+
+typedef enum {
+    UART0 = 0x0,
+    UART1 = 0x1,
+} UartPort;
+
+/*typedef enum {
     FIVE_BITS = 0x0,
     SIX_BITS = 0x1,
     SEVEN_BITS = 0x2,
     EIGHT_BITS = 0x3
-} UartBitsNum4Char;
+} UartBitsNum4Char;*/
+typedef enum {
+    FIVE_BITS  = 0x0,
+    SIX_BITS   = 0x1,
+    SEVEN_BITS = 0x2,
+    EIGHT_BITS = 0x3
+} UartWordLength;
 
 typedef enum {
     ONE_STOP_BIT             = 0,
     ONE_HALF_STOP_BIT        = BIT2,
     TWO_STOP_BIT             = BIT2
-} UartStopBitsNum;
+} UartStopBits; //Num;
 
-typedef enum {
+/*typedef enum {
     NONE_BITS = 0,
     ODD_BITS   = 0,
     EVEN_BITS = BIT4
+} UartParityMode;*/
+
+typedef enum {
+    Parity_None = 0x2,
+    Parity_Even = 0x0,
+    Parity_Odd  = 0x1
 } UartParityMode;
 
 typedef enum {
@@ -40,13 +116,37 @@ typedef enum {
     BIT_RATE_230400 = 230400,
     BIT_RATE_460800 = 460800,
     BIT_RATE_921600 = 921600
-} UartBautRate;
+} UartBaudRate;
 
-typedef enum {
+/*typedef enum {
     NONE_CTRL,
     HARDWARE_CTRL,
     XON_XOFF_CTRL
 } UartFlowCtrl;
+*/
+typedef enum {
+    FlowControl_None    = 0x0,
+    FlowControl_RTS     = 0x1,
+    FlowControl_CTS     = 0x2,
+    FlowControl_CTS_RTS = 0x3
+} UartFlowCtrl;
+
+typedef struct {
+    UartBaudRate   baud_rate;
+    UartWordLength data_bits;
+    UartParityMode parity;    // chip size in byte
+    UartStopBits   stop_bits;
+    UartFlowCtrl   flow_ctrl;
+    uint8          UART_RxFlowThresh;
+    uint32         UART_InverseMask;
+} UartConfigTypeDef;
+
+typedef struct {
+    uint32 UART_IntrEnMask;
+    uint8  UART_RX_TimeOutIntrThresh;
+    uint8  UART_TX_FifoEmptyIntrThresh;
+    uint8  UART_RX_FifoFullIntrThresh;
+} UartIntrConfTypeDef;
 
 typedef enum {
     EMPTY,
@@ -77,20 +177,21 @@ typedef enum {
 } RcvMsgState;
 
 typedef struct {
-    UartBautRate 	     baut_rate;
-    UartBitsNum4Char  data_bits;
-    UartExistParity      exist_parity;
-    UartParityMode 	    parity;    // chip size in byte
-    UartStopBitsNum   stop_bits;
-    UartFlowCtrl         flow_ctrl;
-    RcvMsgBuff          rcv_buff;
-    TrxMsgBuff           trx_buff;
-    RcvMsgState        rcv_state;
-    int                      received;
-    int                      buff_uart_no;  //indicate which uart use tx/rx buffer
+    UartBaudRate 	  baud_rate;
+    UartWordLength    data_bits;
+    UartExistParity   exist_parity;
+    UartParityMode 	  parity;    // chip size in byte
+    UartStopBits      stop_bits;
+    UartFlowCtrl      flow_ctrl;
+    RcvMsgBuff        rcv_buff;
+    TrxMsgBuff        trx_buff;
+    RcvMsgState       rcv_state;
+    int               received;
+    int               buff_uart_no;  //indicate which uart use tx/rx buffer
 } UartDevice;
 
-void uart_init(UartBautRate uart0_br, UartBautRate uart1_br);
+
+//void uart_init(UartBaudRate uart0_br, UartBaudRate uart1_br);
 
 #endif
 

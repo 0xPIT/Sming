@@ -9,28 +9,23 @@
 ## Defaults
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
-## Windows:
-# ESP_HOME = c:/Espressif
-
-## MacOS / Linux:
-# ESP_HOME = /opt/esp-open-sdk
+ESP_HOME = /Users/pit/Desktop/ESP
 
 ## SMING_HOME sets the path where Sming framework is located.
-## Windows:
-# SMING_HOME = c:/tools/sming/Sming 
-
-# MacOS / Linux
-# SMING_HOME = /opt/esp-open-sdk
+SMING_HOME = /Users/pit/Development/git/ESP8266/Sming/Sming
 
 ## COM port parameter is reqruied to flash firmware correctly.
-## Windows: 
-# COM_PORT = COM3
-
-# MacOS / Linux:
-# COM_PORT = /dev/tty.usbserial
+COM_PORT = /dev/cu.usbserial-A9YDLFBF
 
 # Com port default speed
-COM_SPEED ?= 230400
+COM_SPEED ?= 921600
+
+# esptool.py -b 921600 
+#   -p /dev/cu.usbserial-A9YDLFBF 
+#   write_flash 
+#     0x00000 ../bin/eagle.flash.bin 
+#     0x40000 ../bin/eagle.irom0text.bin 
+#     0x7E000 ../bin/blank.bin
 
 
 ifeq ($(OS),Windows_NT)
@@ -87,7 +82,8 @@ endif
 
 export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
-XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
+#XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
+XTENSA_TOOLS_ROOT := /Users/pit/Library/Arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9/bin
 
 # Sming Framework Path
 SMF = $(SMING_HOME)
@@ -109,14 +105,44 @@ TARGET		= app
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
 MODULES		+= $(SMING_HOME)/appinit
-EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include
+EXTRA_INCDIR    ?= include \
+  $(SMING_HOME)/include \
+  $(SMING_HOME)/ \
+  $(SMING_HOME)/system/include \
+  $(SMING_HOME)/Wiring \
+  $(SMING_HOME)/Libraries \
+  $(SMING_HOME)/SmingCore \
+  $(SDK_BASE)/include \
+  $(SDK_BASE)/include/espressif \
+  $(SDK_BASE)/include/freertos \
+  $(SDK_BASE)/include/json \
+  $(SDK_BASE)/include/lwip \
+  $(SDK_BASE)/include/lwip/ipv4 \
+  $(SDK_BASE)/include/lwip/ipv6 \
+  $(SDK_BASE)/include/ssl \
+  $(SDK_BASE)/include/udhcp \
+  $(SDK_BASE)/extra_include
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa main sming $(EXTRA_LIBS)
+LIBS		= gcc hal phy pp net80211 wpa main freertos lwip udhcp sming $(EXTRA_LIBS)
+
+#microc microgcc 
+
+  # -lgcc         \
+  # -lhal         \
+  # -lphy \
+  # -lpp  \
+  # -lnet80211  \
+  # -lwpa \
+  # -lmain  \
+  # -lfreertos  \
+  # -llwip  \
+  # -ludhcp \
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
+# -Wundef 
+CFLAGS		= -Os -g -Wpointer-arith -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # trying to use global WiFi settings from Eclipse Environment Variables
@@ -256,7 +282,8 @@ endif
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
-SDK_INCDIR	= include include/json
+SDK_INCDIR	= include 
+#include/json
 
 # select which tools to use as compiler, librarian and linker
 CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
@@ -346,8 +373,8 @@ ifeq ($(app), 0)
 #	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMING_HOME)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
 
 	$(Q) rm eagle.app.v6.*
-#	$(vecho) "Firmware offset: $(FW_START_OFFSET)"
-#	$(vecho) "Spiffs offset: $(SPIFF_START_OFFSET)"
+	$(vecho) "Firmware offset: $(FW_START_OFFSET)"
+	$(vecho) "Spiffs offset: $(SPIFF_START_OFFSET)"
 
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder $(FW_BASE)."
@@ -434,15 +461,29 @@ ifeq ($(boot), none)
 	$(vecho) "No boot needed."
 endif
 
+# esptool.py -b 921600 -p /dev/cu.usbserial-A9YDLFBF 
+# write_flash 
+# 0x00000 ../bin/eagle.flash.bin 
+# 0x40000 ../bin/eagle.irom0text.bin 
+# 0x7E000 ../bin/blank.bin
+
 flash: all
 ifeq ($(app), 0)	
-#	$(Q) $(KILL_TERM)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) \
+    write_flash \
+      0x00000 $(FW_BASE)/eagle.flash.bin \
+      0x9000 $(FW_BASE)/eagle.irom0text.bin \
+      $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
 else
 ifeq ($(boot), none)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) \
+    write_flash \
+    0x00000 $(FW_BASE)/eagle.flash.bin \
+    0x9000 $(FW_BASE)/eagle.irom0text.bin
 else
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) \
+    write_flash \
+      $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
 endif
 endif
 

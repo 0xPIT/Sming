@@ -32,7 +32,8 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+//#include <stdint.h>
+#include <c_types.h>
 
 #ifndef MQTT_CONF_USERNAME_LENGTH
 	#define MQTT_CONF_USERNAME_LENGTH 13 // Recommended by MQTT Specification (12 + '\0')

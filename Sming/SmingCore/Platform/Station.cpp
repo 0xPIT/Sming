@@ -104,15 +104,15 @@ bool StationClass::isConnectionFailed()
 
 bool StationClass::isEnabledDHCP()
 {
-	return wifi_station_dhcpc_status() == DHCP_STARTED;
+	return false; //wifi_station_dhcpc_status() == DHCP_STARTED;
 }
 
 void StationClass::enableDHCP(bool enable)
 {
-	if (enable)
-		wifi_station_dhcpc_start();
-	else
-		wifi_station_dhcpc_stop();
+	// if (enable)
+	// 	wifi_station_dhcpc_start();
+	// else
+	// 	wifi_station_dhcpc_stop();
 }
 
 IPAddress StationClass::getIP()
@@ -167,7 +167,7 @@ bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway
 	}
 
 	wifi_station_disconnect();
-	wifi_station_dhcpc_stop();
+//	wifi_station_dhcpc_stop();
 	struct ip_info ipinfo;
 	wifi_get_ip_info(STATION_IF, &ipinfo);
 	ipinfo.ip = address;

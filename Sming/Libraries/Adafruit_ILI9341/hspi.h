@@ -2,9 +2,9 @@
 #define INCLUDE_HSPI_H_
 
 #include "spi_register.h" // from 0.9.4 IoT_Demo
-#include <osapi.h>
-#include <os_type.h>
-#include <gpio.h>
+//#include <osapi.h>
+//#include <os_type.h>
+//#include <gpio.h>
 
 //#define SPI         0
 #define HSPI        1

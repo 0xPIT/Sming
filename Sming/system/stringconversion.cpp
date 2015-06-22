@@ -1,4 +1,5 @@
 #include <user_config.h>
+#undef __STRICT_ANSI__
 #include <math.h>
 #include <stdlib.h>
 #include "../include/stringconversion.h"

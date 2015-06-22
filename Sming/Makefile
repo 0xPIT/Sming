@@ -32,6 +32,8 @@
 # Com port speed
 COM_SPEED = 115200
 
+XTENSA_TOOLS_ROOT := /Users/pit/Library/Arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9/bin
+
 
 ifeq ($(OS),Windows_NT)
   # Windows detected
@@ -87,7 +89,6 @@ endif
 
 export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
-XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
 # Sming Framework Path
 SMF = $(SMING_HOME)
@@ -101,15 +102,44 @@ FW_BASE		= out/firmware
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= system system/helpers Wiring SmingCore appinit $(filter %/, $(wildcard SmingCore/*/)) $(filter %/, $(wildcard Services/*/)) $(filter %/, $(wildcard Libraries/*/))
-EXTRA_INCDIR    = include include  system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
+#MODULES		= system system/helpers Wiring SmingCore appinit $(filter %/, $(wildcard SmingCore/*/)) $(filter %/, $(wildcard Services/*/)) $(filter %/, $(wildcard Libraries/*/))
+MODULES		= \
+	system \
+	system/helpers \
+	Wiring \
+	SmingCore \
+	appinit \
+	$(filter %/, $(wildcard SmingCore/*/)) \
+	$(filter %/, $(wildcard Services/*/))
+#	$(filter %/, $(wildcard Libraries/*/))
+
+#EXTRA_INCDIR    = include include system/include Wiring Libraries SmingCore $(SDK_BASE)/include
+EXTRA_INCDIR    ?= include \
+  $(SMING_HOME)/include \
+  $(SMING_HOME)/ \
+  $(SMING_HOME)/system/include \
+  $(SMING_HOME)/Wiring \
+  $(SMING_HOME)/Libraries \
+  $(SMING_HOME)/SmingCore \
+  $(SDK_BASE)/include \
+  $(SDK_BASE)/include/espressif \
+  $(SDK_BASE)/include/freertos \
+  $(SDK_BASE)/include/json \
+  $(SDK_BASE)/include/lwip \
+  $(SDK_BASE)/include/lwip/ipv4 \
+  $(SDK_BASE)/include/lwip/ipv6 \
+  $(SDK_BASE)/include/ssl \
+  $(SDK_BASE)/include/udhcp \
+  $(SDK_BASE)/extra_include
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
+#LIBS		= microc microgcc hal phy pp net80211 wpa main
+LIBS		= gcc hal phy pp net80211 wpa main freertos lwip udhcp sming $(EXTRA_LIBS)
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
+#-Wundef
+CFLAGS		= -Os -g -Wpointer-arith -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # linker flags used to generate the main object file

@@ -35,8 +35,8 @@ void WDTClass::onSystemReady()
 
 void WDTClass::internalApplyEnabled()
 {
-	if (enabled)
-		ets_wdt_enable();
-	else
-		ets_wdt_disable();
+	// if (enabled)
+	// 	ets_wdt_enable();
+	// else
+	// 	ets_wdt_disable();
 }

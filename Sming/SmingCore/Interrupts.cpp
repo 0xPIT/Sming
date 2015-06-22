@@ -9,6 +9,28 @@
 #include "../SmingCore/Digital.h"
 #include "../Wiring/WiringFrameworkIncludes.h"
 
+
+#define ETS_GPIO_INUM       4
+
+#define ETS_GPIO_INTR_ENABLE()  _xt_isr_unmask(1 << ETS_UART_INUM)
+#define ETS_GPIO_INTR_DISABLE() _xt_isr_mask(1 << ETS_UART_INUM)
+
+#define ETS_INTR_LOCK() \
+    vPortEnterCritical()
+
+#define ETS_INTR_UNLOCK() \
+    vPortExitCritical()
+
+#define ETS_GPIO_INTR_ATTACH(func, arg) \
+    _xt_isr_attach(ETS_GPIO_INUM, (_xt_isr)(func));
+// ets_isr_attach(ETS_GPIO_INUM, (func), (void *)(arg))
+
+#define ETS_INTR_ENABLE(inum) \
+    _xt_isr_unmask((1<<inum))
+
+#define ETS_INTR_DISABLE(inum) \
+    _xt_isr_mask((1<<inum))
+
 InterruptCallback _gpioInterruptsList[16] = {0};
 Delegate<void()> _delegateFunctionList[16];
 bool _gpioInterruptsInitialied = false;
@@ -39,6 +61,24 @@ void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, GPIO_INT_TY
 	_gpioInterruptsList[pin] = NULL;
 	_delegateFunctionList[pin] = delegateFunction;
 	attachInterruptHandler(pin, mode);
+}
+
+
+#define GPIO_PIN_ADDR(i)        (GPIO_PIN0_ADDRESS + i*4)
+
+void ICACHE_FLASH_ATTR
+gpio_pin_intr_state_set(uint32 i, GPIO_INT_TYPE intr_state)
+{
+    uint32 pin_reg;
+
+    portENTER_CRITICAL();
+
+    pin_reg = GPIO_REG_READ(GPIO_PIN_ADDR(i));
+    pin_reg &= (~GPIO_PIN_INT_TYPE_MASK);
+    pin_reg |= (intr_state << GPIO_PIN_INT_TYPE_LSB);
+    GPIO_REG_WRITE(GPIO_PIN_ADDR(i), pin_reg);
+
+    portEXIT_CRITICAL();
 }
 
 void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)

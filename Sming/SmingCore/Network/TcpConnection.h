@@ -28,6 +28,7 @@ enum TcpConnectionEvent
 };
 
 struct pbuf;
+struct tcp_pcb;
 class String;
 class IDataSourceStream;
 class IPAddress;

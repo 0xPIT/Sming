@@ -5,8 +5,16 @@
 extern "C" {
 #endif
 
+
+#define TENSILICA 1
+
+#define __have_long64 0
+//#define __int_fast64_t_defined 1
+#define __have_long64 0
+
+	
 	// ESP SDK config
-	#define LWIP_OPEN_SRC
+	//#define LWIP_OPEN_SRC
 	//#define USE_OPTIMIZE_PRINTF
 	#define USE_US_TIMER
 

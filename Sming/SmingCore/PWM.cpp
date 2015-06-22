@@ -23,9 +23,9 @@ void DriverPWM::initialize()
 	if (!initialized)
 	{
 		initialized = true;
-		os_timer_disarm(&main);
-		os_timer_setfn(&main, (os_timer_func_t *)processingStatic, this);
-		ets_timer_arm_new(&main, period, 1, 0);
+		// os_timer_disarm(&main);
+		// os_timer_setfn(&main, (os_timer_func_t *)processingStatic, this);
+		// ets_timer_arm_new(&main, period, 1, 0);
 	}
 }
 
@@ -58,7 +58,7 @@ void DriverPWM::noAnalogWrite(uint8_t pin)
 
 	if (channels.count() == 0)
 	{
-		os_timer_disarm(&main);
+		//os_timer_disarm(&main);
 		initialized = false;
 	}
 }
@@ -87,8 +87,8 @@ ChannelPWM::ChannelPWM(int pwmPin)
 
 void ChannelPWM::initialize()
 {
-	os_timer_disarm(&item);
-	os_timer_setfn(&item, (os_timer_func_t *)processingStatic, this);
+	// os_timer_disarm(&item);
+	// os_timer_setfn(&item, (os_timer_func_t *)processingStatic, this);
 }
 
 void ChannelPWM::config(int duty, uint32_t basePeriod)
@@ -112,15 +112,15 @@ void ChannelPWM::high()
 
 	if (time != ULONG_MAX) // Full ON mode
 	{
-		os_timer_disarm(&item);
+		//os_timer_disarm(&item);
 		item.timer_arg = this;
-		ets_timer_arm_new(&item, time, 0, 0);
+		//ets_timer_arm_new(&item, time, 0, 0);
 	}
 }
 
 void ChannelPWM::close()
 {
-	os_timer_disarm(&item);
+	//os_timer_disarm(&item);
 	digitalWrite(pin, 0);
 }
 

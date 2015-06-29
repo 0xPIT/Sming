@@ -93,26 +93,26 @@ typedef unsigned long   mem_ptr_t;
 #define LWIP_PLATFORM_HTONS(_n)  ((u16_t)((((_n) & 0xff) << 8) | (((_n) >> 8) & 0xff)))
 #define LWIP_PLATFORM_HTONL(_n)  ((u32_t)( (((_n) & 0xff) << 24) | (((_n) & 0xff00) << 8) | (((_n) >> 8)  & 0xff00) | (((_n) >> 24) & 0xff) ))
 
-#if LWIP_RAW
-extern u8_t memp_memory_RAW_PCB_base[];
-#endif /* LWIP_RAW */
+// #if LWIP_RAW
+// extern u8_t memp_memory_RAW_PCB_base[];
+// #endif /* LWIP_RAW */
 
-#if LWIP_UDP
-extern u8_t memp_memory_UDP_PCB_base[];
-#endif /* LWIP_UDP */
+// #if LWIP_UDP
+// extern u8_t memp_memory_UDP_PCB_base[];
+// #endif /* LWIP_UDP */
 
-#if LWIP_TCP
-extern u8_t memp_memory_TCP_PCB_base[];
-extern u8_t memp_memory_TCP_PCB_LISTEN_base[];
-extern u8_t memp_memory_TCP_SEG_base[] SHMEM_ATTR;
-#endif /* LWIP_TCP */
+// #if LWIP_TCP
+// extern u8_t memp_memory_TCP_PCB_base[];
+// extern u8_t memp_memory_TCP_PCB_LISTEN_base[];
+// extern u8_t memp_memory_TCP_SEG_base[] SHMEM_ATTR;
+// #endif /* LWIP_TCP */
 
-#if (!NO_SYS || (NO_SYS && !NO_SYS_NO_TIMERS)) /* LWIP_TIMERS */
-extern u8_t memp_memory_SYS_TIMEOUT_base[];
-#endif /* LWIP_TIMERS */
+// #if (!NO_SYS || (NO_SYS && !NO_SYS_NO_TIMERS)) /* LWIP_TIMERS */
+// extern u8_t memp_memory_SYS_TIMEOUT_base[];
+// #endif /* LWIP_TIMERS */
 
-extern u8_t memp_memory_PBUF_base[];
-extern u8_t memp_memory_PBUF_POOL_base[];
+// extern u8_t memp_memory_PBUF_base[];
+// extern u8_t memp_memory_PBUF_POOL_base[];
 
 
 

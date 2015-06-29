@@ -9,34 +9,41 @@ extern "C" {
 	#define SERIAL_BAUD_RATE 115200
 
 	// ESP SDK config
-	#define LWIP_OPEN_SRC
-	#define USE_US_TIMER
+	//#define LWIP_OPEN_SRC
+	//#define USE_US_TIMER
 
 	// Default types
-	#define __CORRECT_ISO_CPP_STDLIB_H_PROTO
-	#include <limits.h>
-	#include <stdint.h>
+	//#define __CORRECT_ISO_CPP_STDLIB_H_PROTO
+	//#include <limits.h>
+	//#include <stdint.h>
 
 	// Override c_types.h include and remove buggy espconn
-	#define _C_TYPES_H_
-	#define _NO_ESPCON_
+	//#define _C_TYPES_H_
+	//#define _NO_ESPCON_
 
 	// Updated, compatible version of c_types.h
 	// Just removed types declared in <stdint.h>
-	#include <espinc/c_types_compatible.h>
+	// #include <espinc/c_types_compatible.h>
 
-	// System API declarations
+	// // System API declarations
 	#include <esp_systemapi.h>
 
-	// C++ Support
-	#include <esp_cplusplus.h>
-	// Extended string conversion for compatibility
-	#include <stringconversion.h>
-	// Network base API
+#define TENSILICA 1
+
+#define __have_long64 0
+//#define __int_fast64_t_defined 1
+#define __have_long64 0
+
+
+	// // C++ Support
+	// #include <esp_cplusplus.h>
+	// // Extended string conversion for compatibility
+	// #include <stringconversion.h>
+	// // Network base API
 	#include <espinc/lwip_includes.h>
 
-	// Beta boards
-	#define BOARD_ESP01
+	// // Beta boards
+	// #define BOARD_ESP01
 
 #ifdef __cplusplus
 }

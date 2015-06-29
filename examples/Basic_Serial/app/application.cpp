@@ -1,9 +1,9 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include "SerialReadingDelegateDemo.h"
+//#include "SerialReadingDelegateDemo.h"
 
 Timer procTimer;
-SerialReadingDelegateDemo delegateDemoClass;
+//SerialReadingDelegateDemo delegateDemoClass;
 int helloCounter = 0;
 
 void sayHello()
@@ -18,7 +18,7 @@ void sayHello()
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(115200); // 115200 by default
 
 	procTimer.initializeMs(2000, sayHello).start();
 
@@ -29,5 +29,5 @@ void init()
 
 	// 	* Option 2
 	//  Instantiate hwsDelegateDemo which includes Serial Delegate class
-	delegateDemoClass.begin();
+	//delegateDemoClass.begin();
 }

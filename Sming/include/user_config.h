@@ -20,6 +20,7 @@ extern "C" {
 
 	// Default types
 	#define __CORRECT_ISO_CPP_STDLIB_H_PROTO
+	#define __int_fast64_t_defined 1
 	#include <limits.h>
 	#include <stdint.h>
 

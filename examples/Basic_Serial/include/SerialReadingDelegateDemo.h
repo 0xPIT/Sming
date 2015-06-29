@@ -14,7 +14,7 @@ public:
 	{
 		Serial.setCallback(StreamDataReceivedDelegate(&SerialReadingDelegateDemo::onData, this));
 		debugf("hwsDelegateDemo instantiated, waiting for data");
-	};
+	}
 
 	void onData(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
 	{
@@ -22,16 +22,15 @@ public:
 		Serial.print(micros());
 		Serial.print(" char = 0x");
 		Serial.print(String(arrivedChar, HEX)); // char hex code
+		Serial.print(arrivedChar, HEX); // char hex code
 		Serial.print(" available = ");
 		Serial.println(availableCharsCount);
 
 		numCallback++;
 
-		if (arrivedChar == '\n') // Lets show data!
-		{
+		if (arrivedChar == '\n') { // Lets show data!
 			Serial.println("<New line received>");
-			while (stream.available())
-			{
+			while (stream.available()) {
 				char cur = stream.read();
 				charReceived++;
 				Serial.print(cur);

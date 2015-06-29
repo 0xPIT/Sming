@@ -51,11 +51,11 @@ void Timer::start(bool repeating)
 	if(interval == 0 || (!callback && !delegate_func)) return;
 
 	timer = xTimerCreate(
-                     (const signed char *)"timer",       /* Just a text name, not used by the RTOS kernel. */
-                     (100),        /* The timer period in ticks. */
-                     pdTRUE,       /* The timers will auto-reload themselves when they expire. */
-                     (void *)this, /* Assign each timer a unique id */
-                     processing    /* Each timer calls the same callback when it expires. */
+                     (const signed char *)"timer",
+                     interval,        // The timer period in ticks.
+                     pdTRUE,       // The timers will auto-reload themselves when they expire.
+                     (void *)this, // Assign each timer a unique id
+                     processing    // Each timer calls the same callback when it expires.
   );
 
 	// ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
@@ -131,7 +131,6 @@ void Timer::setCallback(TimerDelegate delegateFunction)
 
 void Timer::processing(xTimerHandle tmr)
 {
-	//Timer *ptimer = (Timer*)arg;
 	Timer *ptimer = (Timer *)pvTimerGetTimerID(tmr);
 
 	if (ptimer == NULL) {

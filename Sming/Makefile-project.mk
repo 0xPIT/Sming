@@ -127,8 +127,8 @@ EXTRA_INCDIR    ?= include \
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
 LIBS		= gcc hal phy pp net80211 wpa main freertos lwip udhcp sming $(EXTRA_LIBS)
 
-#microc microgcc 
-
+  # -lmicroc 
+  # -lmicrogcc 
   # -lgcc         \
   # -lhal         \
   # -lphy \
@@ -141,8 +141,7 @@ LIBS		= gcc hal phy pp net80211 wpa main freertos lwip udhcp sming $(EXTRA_LIBS)
   # -ludhcp \
 
 # compiler flags using during compilation of source files
-# -Wundef 
-CFLAGS		= -Os -g -Wpointer-arith -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
+CFLAGS		= -Os -g -Wpointer-arith -Werror -Wundef -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # trying to use global WiFi settings from Eclipse Environment Variables
@@ -157,6 +156,7 @@ endif
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections
+# -Wl,--verbose
 
 # linker script used for the above linkier step
 LD_PATH     = $(SMING_HOME)/compiler/ld/

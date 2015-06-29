@@ -5,7 +5,7 @@
 #Add your source directories here separated by space
 MODULES = app
 
-#ESP_HOME = /Users/pit/Desktop/ESP
+ESP_HOME = /Users/pit/Desktop/ESP
 
 SMING_HOME = /Users/pit/Development/git/ESP8266/Sming/Sming
 
